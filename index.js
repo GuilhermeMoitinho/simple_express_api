@@ -1,9 +1,11 @@
-const express = require('express')
+const express = require('express');
+const cors = require('cors');
 
-let books = []
+let books = [];
 
 const app = express();
 
+app.use(cors());
 app.use(express.json());
 
 app.post('/books', async (req, res) => 
