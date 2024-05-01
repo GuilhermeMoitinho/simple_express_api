@@ -14,6 +14,8 @@ app.post('/books', async (req, res) =>
 
     const book = {id, title, author, publishedAt}
 
+    if(!book) return res.status(400).json('informe os valores pedidos');
+
     await books.push(book);
 
     return res.status(201).json(book);
@@ -22,12 +24,15 @@ app.post('/books', async (req, res) =>
 
 app.get('/books', async (req, res) => 
 {
-    const allBooks = books;
+    let allBooks = books
     return res.status(200).json(allBooks);
 })
 
 app.get('/books/:book_id', async (req, res) => {
     const { book_id } = req.params;
+
+    if(!book_id) return res.status(400).json('Informe um identificador');
+
     const bookEspecifico = await books.find(book => book.id === book_id);
 
     if(!bookEspecifico) return res.status(404).json('Não foi encontrado')
@@ -38,6 +43,13 @@ app.get('/books/:book_id', async (req, res) => {
 app.delete('/books/:book_id', async (req, res) => 
 {
     const { book_id } = req.params;
+
+    if(!book_id) return res.status(400).json('Informe um identificador');
+
+    const bookEspecifico = await books.find(book => book.id === book_id);
+
+    if(!bookEspecifico) return res.status(404).json('Não foi encontrado')
+
     const indexToRemove = await books.findIndex(book => book.id === book_id);
 
 if (indexToRemove !== -1) {
@@ -49,7 +61,13 @@ if (indexToRemove !== -1) {
 app.put('/books/:book_id', async (req, res) => 
 {
     const { book_id } = req.params;
+
+    if(!book_id) return res.status(400).json('Informe um identificador');
+
     const bookEspecifico = await books.find(book => book.id === book_id);
+
+    if(!bookEspecifico) return res.status(404).json('Não foi encontrado')
+
     const {id, title, author, publishedAt} = req.body
 
     bookEspecifico.id = id;
