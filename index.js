@@ -44,4 +44,19 @@ if (indexToRemove !== -1) {
     return res.status(204).json('deletado')
 })
 
+app.put('/books/:book_id', (req, res) => 
+{
+    const { book_id } = req.params;
+    const bookEspecifico = books.find(book => book.id === book_id);
+    const {id, title, author, publishedAt} = req.body
+
+    bookEspecifico.id = id;
+    bookEspecifico.title = title
+    bookEspecifico.author = author
+    bookEspecifico.publishedAt = publishedAt
+    
+
+    return res.status(204).json("Book editado")
+})
+
 app.listen(3333, () => console.log('server'))
