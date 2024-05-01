@@ -1,9 +1,13 @@
 const express = require('express');
+const { scopePerRequest } = require('awilix-express');
+const container = require('./container');
 const cors = require('cors');
+
 
 let books = [];
 
 const app = express();
+app.use(scopePerRequest(container));
 
 app.use(cors());
 app.use(express.json());
@@ -24,18 +28,21 @@ app.post('/books', async (req, res) =>
 
 app.get('/books', async (req, res) => 
 {
-    let allBooks = books
+    const bookService = req.container.resolve('bookService');
+
+    let allBooks = bookService.getAllBooks(books);
     return res.status(200).json(allBooks);
 })
 
 app.get('/books/:book_id', async (req, res) => {
     const { book_id } = req.params;
 
-    if(!book_id) return res.status(400).json('Informe um identificador');
+    if (!book_id) return res.status(400).json('Informe um identificador');
 
-    const bookEspecifico = await books.find(book => book.id === book_id);
+    const bookService = req.container.resolve('bookService');
+    const bookEspecifico = bookService.getBookById(books, book_id); 
 
-    if(!bookEspecifico) return res.status(404).json('Não foi encontrado')
+    if (!bookEspecifico) return res.status(404).json('Não foi encontrado');
 
     return res.status(200).json(bookEspecifico);
 });
@@ -46,7 +53,8 @@ app.delete('/books/:book_id', async (req, res) =>
 
     if(!book_id) return res.status(400).json('Informe um identificador');
 
-    const bookEspecifico = await books.find(book => book.id === book_id);
+    const bookService = req.container.resolve('bookService');
+    const bookEspecifico = bookService.getBookById(books, book_id); 
 
     if(!bookEspecifico) return res.status(404).json('Não foi encontrado')
 
